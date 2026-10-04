@@ -83,7 +83,7 @@ function ReportsPage() {
     setBusy(true);
     const title = `Awareness report ${new Date().toLocaleDateString("en-GB")}`;
     const { error } = await supabase.from("reports").insert({ title, summary: r as never });
-    if (error) { setBusy(false); return toast.error(error.message); }
+    if (error) { setBusy(false); toast.error(error.message); return; }
     await logAudit("Report generated", title);
     await exportPdf(r);
     setBusy(false); toast.success("Report generated and exported"); refresh();

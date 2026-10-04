@@ -45,6 +45,7 @@ function TrainingPage() {
   const submit = async () => {
     if (!active) return;
     const lesson = LESSONS[active.slug];
+    if (!lesson) return;
     if (Object.keys(answers).length < lesson.quiz.length) { toast.error("Answer all questions first"); return; }
     const correct = lesson.quiz.filter((q, i) => answers[i] === q.answer).length;
     const score = Math.round((correct / lesson.quiz.length) * 100);
@@ -81,13 +82,13 @@ function TrainingPage() {
         <div className="max-w-3xl space-y-4">
           <Button variant="ghost" onClick={() => setActive(null)}><ArrowLeft className="mr-1 h-4 w-4" />All modules</Button>
           <Panel title={active.title}>
-            <div className="space-y-2 text-sm">{LESSONS[active.slug].explanation.map((p) => <p key={p}>{p}</p>)}</div>
+            <div className="space-y-2 text-sm">{LESSONS[active.slug]!.explanation.map((p) => <p key={p}>{p}</p>)}</div>
             <h3 className="mt-5 text-sm font-semibold">Examples</h3>
-            <ul className="mt-2 space-y-1.5">{LESSONS[active.slug].examples.map((e) => <li key={e} className="rounded-md border-l-4 border-risk-high bg-muted px-3 py-2 text-sm">{e}</li>)}</ul>
+            <ul className="mt-2 space-y-1.5">{LESSONS[active.slug]!.examples.map((e) => <li key={e} className="rounded-md border-l-4 border-risk-high bg-muted px-3 py-2 text-sm">{e}</li>)}</ul>
           </Panel>
           <Panel title="Mini quiz">
             <div className="space-y-5">
-              {LESSONS[active.slug].quiz.map((q, qi) => (
+              {LESSONS[active.slug]!.quiz.map((q, qi) => (
                 <div key={qi}>
                   <p className="mb-2 text-sm font-medium">{qi + 1}. {q.q}</p>
                   <div className="grid gap-2">

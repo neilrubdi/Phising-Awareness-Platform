@@ -36,7 +36,7 @@ function UsersPage() {
   const [level, setLevel] = useState("all");
   const [edit, setEdit] = useState<StaffUser | "new" | null>(null);
   const [form, setForm] = useState({ name: "", role: "", department_id: "" });
-  const [errs, setErrs] = useState<Record<string, string>>({});
+  const [errs, setErrs] = useState<Partial<Record<"name" | "role" | "department_id", string>>>({});
   const [view, setView] = useState<UserRisk | null>(null);
   const [assign, setAssign] = useState<StaffUser | null>(null);
   const [moduleId, setModuleId] = useState("");
