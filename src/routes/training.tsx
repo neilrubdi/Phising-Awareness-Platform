@@ -45,12 +45,12 @@ function TrainingPage() {
   const submit = async () => {
     if (!active) return;
     const lesson = LESSONS[active.slug];
-    if (Object.keys(answers).length < lesson.quiz.length) return toast.error("Answer all questions first");
+    if (Object.keys(answers).length < lesson.quiz.length) { toast.error("Answer all questions first"); return; }
     const correct = lesson.quiz.filter((q, i) => answers[i] === q.answer).length;
     const score = Math.round((correct / lesson.quiz.length) * 100);
     const passed = score >= 50;
     const { error } = await supabase.from("training_attempts").insert({ user_id: uid, module_id: active.id, score, completed: passed, status: passed ? "completed" : "assigned" });
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     if (passed) await logAudit("User completed training", active.title, `${learner?.name} scored ${score}%`, learner?.name ?? "User");
     setResult(score); refresh();
     toast[passed ? "success" : "error"](passed ? `Module complete — ${score}%` : `Scored ${score}%. Try again to complete.`);

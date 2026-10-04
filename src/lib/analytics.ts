@@ -145,6 +145,6 @@ export function overallRisk(risks: UserRisk[]) {
 export function trendSummary(stats: CampaignStats[]) {
   const run = stats.filter((s) => s.delivered > 0);
   if (run.length < 2) return null;
-  const first = run[0], last = run[run.length - 1];
+  const first = run[0]!, last = run[run.length - 1]!;
   return { first, last, reduction: Math.round((first.clickRate - last.clickRate) * 10) / 10 };
 }

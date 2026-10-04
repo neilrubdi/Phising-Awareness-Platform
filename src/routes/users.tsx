@@ -56,26 +56,26 @@ function UsersPage() {
   };
   const save = async () => {
     const p = schema.safeParse(form);
-    if (!p.success) return setErrs(Object.fromEntries(p.error.issues.map((i) => [i.path[0] as string, i.message])));
+    if (!p.success) { setErrs(Object.fromEntries(p.error.issues.map((i) => [i.path[0] as string, i.message]))); return; }
     let res;
     if (edit === "new") {
       const next = Math.max(0, ...data.users.map((u) => parseInt(u.employee_code.slice(4)) || 0)) + 1;
       res = await supabase.from("staff_users").insert({ ...p.data, employee_code: `EMP-${String(next).padStart(4, "0")}` });
     } else if (edit) res = await supabase.from("staff_users").update(p.data).eq("id", edit.id);
-    if (res?.error) return toast.error(res.error.message);
+    if (res?.error) { toast.error(res.error.message); return; }
     await logAudit(edit === "new" ? "User created" : "User updated", p.data.name);
     toast.success("Saved"); setEdit(null); refresh();
   };
   const remove = async (u: StaffUser) => {
     if (!confirm(`Delete fictional user ${u.name}?`)) return;
     const { error } = await supabase.from("staff_users").delete().eq("id", u.id);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     await logAudit("User deleted", u.name); toast.success("Deleted"); refresh();
   };
   const doAssign = async () => {
     if (!assign || !moduleId) return;
     const { error } = await supabase.from("training_attempts").insert({ user_id: assign.id, module_id: moduleId, score: 0, completed: false, status: "assigned" });
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     await logAudit("Training assigned", assign.name, data.modules.find((m) => m.id === moduleId)?.title ?? "");
     toast.success("Training assigned"); setAssign(null); refresh();
   };

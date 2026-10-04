@@ -29,9 +29,9 @@ function DepartmentsPage() {
 
   const add = async () => {
     const p = z.string().trim().min(2).max(60).safeParse(name);
-    if (!p.success) return toast.error("Department name must be 2–60 characters");
+    if (!p.success) { toast.error("Department name must be 2–60 characters"); return; }
     const { error } = await supabase.from("departments").insert({ name: p.data });
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     await logAudit("Department created", p.data); setName(""); toast.success("Department added"); refresh();
   };
 

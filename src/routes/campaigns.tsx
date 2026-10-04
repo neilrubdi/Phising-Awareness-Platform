@@ -37,7 +37,7 @@ const schema = z.object({
 
 type FormState = z.input<typeof schema>;
 const today = () => new Date().toISOString().slice(0, 10);
-const empty = (): FormState => ({ name: "", description: "", scenario: SCENARIOS[0].name, target_department_id: null, difficulty: "Beginner", start_date: today(), end_date: today(), status: "Draft" });
+const empty = (): FormState => ({ name: "", description: "", scenario: SCENARIOS[0]!.name, target_department_id: null, difficulty: "Beginner", start_date: today(), end_date: today(), status: "Draft" });
 
 function CampaignsPage() {
   const { data, isLoading, error } = useAppData();
@@ -45,7 +45,7 @@ function CampaignsPage() {
   const [editing, setEditing] = useState<Campaign | null>(null);
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState<FormState>(empty());
-  const [errs, setErrs] = useState<Record<string, string>>({});
+  const [errs, setErrs] = useState<Partial<Record<keyof FormState, string>>>({});
   const [results, setResults] = useState<CampaignStats | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -77,7 +77,7 @@ function CampaignsPage() {
       ? await supabase.from("campaigns").update(payload).eq("id", editing.id)
       : await supabase.from("campaigns").insert(payload);
     setBusy(false);
-    if (res.error) return toast.error(res.error.message);
+    if (res.error) { toast.error(res.error.message); return; }
     await logAudit(editing ? "Campaign updated" : "Campaign created", payload.name, `Difficulty: ${payload.difficulty}, target: ${deptName(payload.target_department_id)}`);
     toast.success(editing ? "Campaign updated" : "Campaign created");
     setOpen(false); refresh();
@@ -86,21 +86,21 @@ function CampaignsPage() {
   const remove = async (c: Campaign) => {
     if (!confirm(`Delete campaign "${c.name}" and its simulation records?`)) return;
     const { error } = await supabase.from("campaigns").delete().eq("id", c.id);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     await logAudit("Campaign deleted", c.name);
     toast.success("Campaign deleted"); refresh();
   };
 
   const launch = async (c: Campaign) => {
-    const tpl = SCENARIOS.find((s) => s.name === c.scenario) ?? SCENARIOS[0];
+    const tpl = SCENARIOS.find((s) => s.name === c.scenario) ?? SCENARIOS[0]!;
     const { data: msgs, error: e1 } = await supabase.from("simulation_messages")
       .insert(tpl.messages.map((m) => ({ ...m, campaign_id: c.id })))
       .select("id");
-    if (e1 || !msgs) return toast.error(e1?.message ?? "Failed");
+    if (e1 || !msgs) { toast.error(e1?.message ?? "Failed"); return; }
     const targets = data.users.filter((u) => !c.target_department_id || u.department_id === c.target_department_id);
-    const rows = targets.map((u, i) => ({ user_id: u.id, message_id: msgs[i % msgs.length].id, action: "delivered" }));
+    const rows = targets.map((u, i) => ({ user_id: u.id, message_id: msgs[i % msgs.length]!.id, action: "delivered" }));
     const { error: e2 } = await supabase.from("user_interactions").insert(rows);
-    if (e2) return toast.error(e2.message);
+    if (e2) { toast.error(e2.message); return; }
     await supabase.from("campaigns").update({ status: "Active" }).eq("id", c.id);
     await logAudit("Simulation launched", c.name, `${msgs.length} simulated messages delivered in-app to ${targets.length} fictional users`);
     toast.success(`Launched to ${targets.length} in-app inboxes`); refresh();
@@ -205,6 +205,6 @@ function CampaignsPage() {
   );
 }
 
-function Field({ label, err, children }: { label: string; err?: string; children: ReactNode }) {
+function Field({ label, err, children }: { label: string; err?: string | undefined; children: ReactNode }) {
   return <div className="grid gap-1.5"><Label>{label}</Label>{children}{err && <p className="text-xs text-destructive">{err}</p>}</div>;
 }
