@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
-import { AlertTriangle, Flag, Mail, MailOpen, ShieldCheck, ExternalLink } from "lucide-react";
+import { Flag, Mail, MailOpen, ShieldCheck, ExternalLink } from "lucide-react";
 import { PageHeader } from "@/components/AppShell";
 import { ErrorState, Loading, Panel, fmtDateTime } from "@/components/common";
 import { Button } from "@/components/ui/button";
@@ -121,7 +121,7 @@ function SimulationsPage() {
 
       <Dialog open={!!caught} onOpenChange={(o) => !o && setCaught(null)}>
         <DialogContent className="max-w-lg">
-          <DialogHeader><DialogTitle className="flex items-center gap-2 text-risk-high"><AlertTriangle className="h-5 w-5" />⚠️ Phishing Simulation</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle className="flex items-center gap-2 text-risk-high">⚠️ Phishing Simulation</DialogTitle></DialogHeader>
           {caught && (
             <div className="space-y-4 text-sm">
               <p><strong>This was a simulated phishing message.</strong> No information was collected — in a real attack, this link could have stolen your credentials or installed malware.</p>
