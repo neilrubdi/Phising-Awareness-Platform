@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import { z } from "zod";
 import { toast } from "sonner";
 import { Plus, Rocket, Pencil, Trash2, BarChart3 } from "lucide-react";
@@ -205,6 +205,6 @@ function CampaignsPage() {
   );
 }
 
-function Field({ label, err, children }: { label: string; err?: string; children: React.ReactNode }) {
+function Field({ label, err, children }: { label: string; err?: string; children: ReactNode }) {
   return <div className="grid gap-1.5"><Label>{label}</Label>{children}{err && <p className="text-xs text-destructive">{err}</p>}</div>;
 }
